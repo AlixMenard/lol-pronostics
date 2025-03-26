@@ -31,21 +31,60 @@ const GridLayout = styled('div')`
   padding: 16px;
 `;
 
-export const MatchList = ({ matches, onMatchSelect }: MatchListProps) => (
-  <>
-    <Typography variant="h6" sx={{ my: 2, px: 2 }}>
-      Matches
-    </Typography>
-    <ScrollableBox>
-      <GridLayout>
-        {matches.map((match) => (
-          <MatchCard
-            key={match.id}
-            match={match}
-            onBetClick={(team1Logo, team2Logo) => onMatchSelect(match, team1Logo, team2Logo)}
-          />
+type GroupedMatches = {
+  [key: string]: Match[];
+};
+
+const groupMatchesByDate = (matches: Match[]): GroupedMatches => {
+  return matches.reduce((groups: GroupedMatches, match) => {
+    const date = new Date(match.date).toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(match);
+    return groups;
+  }, {});
+};
+
+const DateDivider = styled(Typography)`
+  color: var(--text-color);
+  padding: 16px;
+  margin-top: 16px;
+  font-weight: bold;
+  text-transform: capitalize;
+  border-bottom: 1px solid var(--secondary-color);
+`;
+
+export const MatchList = ({ matches, onMatchSelect }: MatchListProps) => {
+  const groupedMatches = groupMatchesByDate(matches);
+
+  return (
+    <>
+      <Typography variant="h6" sx={{ my: 2, px: 2 }}>
+        Matches
+      </Typography>
+      <ScrollableBox>
+        {Object.entries(groupedMatches).map(([date, dateMatches]) => (
+          <Box key={date}>
+            <DateDivider variant="h6">{date}</DateDivider>
+            <GridLayout>
+              {dateMatches.map((match) => (
+                <MatchCard
+                  key={match.id}
+                  match={match}
+                  onBetClick={(team1Logo, team2Logo) => onMatchSelect(match, team1Logo, team2Logo)}
+                />
+              ))}
+            </GridLayout>
+          </Box>
         ))}
-      </GridLayout>
-    </ScrollableBox>
-  </>
-);
+      </ScrollableBox>
+    </>
+  );
+};
