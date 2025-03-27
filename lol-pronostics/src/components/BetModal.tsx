@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { TeamCode } from '../types';
+import { TeamCode, Match } from '../types';
 import logosData from '../assets/logos.json';
+import { BoNumber } from './common/BoNumber';
+import { TeamLogo } from './common/TeamLogo';
 
 const StyledDialog = styled(Dialog)`
   .MuiPaper-root {
     background-color: var(--primary-color);
     color: var(--text-color);
-    border: 1px solid var(--secondary-color);
+    border: 1px solid var(--secondary-color); 
   }
 `;
 
@@ -27,28 +29,35 @@ const TeamContainer = styled(Box)`
   margin-bottom: 16px;
 `;
 
-const TeamLogo = styled('img')`
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
+const TitleContainer = styled('div')`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 interface BetModalProps {
   open: boolean;
   onClose: () => void;
-  match: {
-    id: number;
-    team1: string;
-    team2: string;
-  };
+  match: Match;
   onSubmit: (score1: number, score2: number) => void;
-  team1Logo: string | null;
-  team2Logo: string | null;
 }
 
-const BetModal = ({ open, onClose, match, onSubmit, team1Logo, team2Logo }: BetModalProps) => {
+const BetModal = ({ open, onClose, match, onSubmit }: BetModalProps) => {
   const [score1, setScore1] = useState<string>('');
   const [score2, setScore2] = useState<string>('');
+
+  const handleScoreChange = (setValue: (value: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    var maxValue = match.bo/2+0.5
+    console.log(maxValue)
+    if (isNaN(value) || value < 0) {
+      setValue('0');
+    } else if (value > maxValue) {
+      setValue(maxValue.toString());
+    } else {
+      setValue(e.target.value);
+    }
+  };
 
   const handleSubmit = () => {
     const score1Num = parseInt(score1);
@@ -64,25 +73,32 @@ const BetModal = ({ open, onClose, match, onSubmit, team1Logo, team2Logo }: BetM
 
   return (
     <StyledDialog open={open} onClose={onClose}>
-      <DialogTitle>Pronostiquer le match</DialogTitle>
+      <DialogTitle>
+        <TitleContainer>
+          Pronostiquer le match
+          <BoNumber bo={match.bo} />
+        </TitleContainer>
+      </DialogTitle>
       <DialogContent>
         <TeamContainer>
-          {team1Logo && <TeamLogo src={team1Logo} alt={match.team1} />}
+          <TeamLogo teamCode={match.team1} />
           <TextField
             label={match.team1}
             type="number"
             value={score1}
-            onChange={(e) => setScore1(e.target.value)}
+            onChange={handleScoreChange(setScore1)}
+            inputProps={{ min: 0, max: match.bo/2+0.5 }}
             fullWidth
           />
         </TeamContainer>
         <TeamContainer>
-          {team2Logo && <TeamLogo src={team2Logo} alt={match.team2} />}
+          <TeamLogo teamCode={match.team2} />
           <TextField
             label={match.team2}
             type="number"
             value={score2}
-            onChange={(e) => setScore2(e.target.value)}
+            onChange={handleScoreChange(setScore2)}
+            inputProps={{ min: 0, max: match.bo }}
             fullWidth
           />
         </TeamContainer>

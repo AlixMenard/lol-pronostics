@@ -11,6 +11,9 @@ export interface Match {
   competition_id: number;
   score1?: number;
   score2?: number;
+  bo: number;
+  status: string;
+  userBet?: UserBet;
 }
 
 export interface RankingData {
@@ -36,7 +39,12 @@ export interface Prediction {
   date: string;
 }
 
-export type TeamCode = 'HRTS' | 'ZNT' | 'NBS' | 'LR' | 'SUP' | 'Z10' | 'TP' | 'IJC' | 
+export interface UserBet {
+  team1bet: number;
+  team2bet: number;
+}
+
+export type TeamCode = 'TBD' | 'HRTS' | 'ZNT' | 'NBS' | 'LR' | 'SUP' | 'Z10' | 'TP' | 'IJC' | 
   'BIG' | 'CZV' | 'GK' | 'BAR' | 'KCB' | 'EWI' | 'MCK' | 'FLH' | 'FNC' | 'GX' | 
   'TH' | 'null' | 'G2' | 'MKOI' | 'VIT' | 'KC' | 'BDS' | 'SK' | 'HLE' | 'GEN' | 
   'DRX' | 'DNF' | 'NS' | 'BRO' | 'BFX' | 'DK' | 'KT' | 'T1';
