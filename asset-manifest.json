@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/lol-pronostics/static/css/main.99b84c99.css",
-    "main.js": "/lol-pronostics/static/js/main.a187fbdd.js",
+    "main.js": "/lol-pronostics/static/js/main.281fb114.js",
     "static/media/RGE.png": "/lol-pronostics/static/media/RGE.32db23c02b32f78ed16a.png",
     "static/media/cde.png": "/lol-pronostics/static/media/cde.be8576bdfc825a9f859a.png",
     "static/media/logo_mode_otp.png": "/lol-pronostics/static/media/logo_mode_otp.1e96d7d16338878c0ec5.png",
@@ -13,10 +13,10 @@
     "static/media/cdf.png": "/lol-pronostics/static/media/cdf.3e7ba5ab1afa7eaabc8f.png",
     "index.html": "/lol-pronostics/index.html",
     "main.99b84c99.css.map": "/lol-pronostics/static/css/main.99b84c99.css.map",
-    "main.a187fbdd.js.map": "/lol-pronostics/static/js/main.a187fbdd.js.map"
+    "main.281fb114.js.map": "/lol-pronostics/static/js/main.281fb114.js.map"
   },
   "entrypoints": [
     "static/css/main.99b84c99.css",
-    "static/js/main.a187fbdd.js"
+    "static/js/main.281fb114.js"
   ]
 }
