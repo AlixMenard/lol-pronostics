@@ -91,7 +91,13 @@ type LogosType = Record<TeamCode, string>;
 const teamLogos = logosData as LogosType;
 
 export const MatchCard = ({ match, onBetClick, isMobile }: MatchCardProps) => {
-  const isMatchStarted = new Date(match.date) <= new Date();
+  const getAdjustedMatchTime = (dateString: string) => {
+    const matchDate = new Date(dateString);
+    matchDate.setHours(matchDate.getHours() + 1);
+    return matchDate;
+  };
+
+  const isMatchStarted = getAdjustedMatchTime(match.date) <= new Date();
   const hasBet = !!match.userBet;
   const hasScore = match.score1 !== undefined && 
                   match.score2 !== undefined && 

@@ -15,7 +15,11 @@ interface MatchTimeProps {
 
 export const MatchTime = ({ date }: MatchTimeProps) => {
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('fr-FR', {
+    const matchDate = new Date(dateString);
+    // Ajouter une heure
+    matchDate.setHours(matchDate.getHours() + 1);
+    
+    return matchDate.toLocaleTimeString('fr-FR', {
       hour: '2-digit',
       minute: '2-digit'
     });

@@ -78,6 +78,10 @@ const nokaVeutPasAfficherTropDeMatchs = (matches: Match[]): Match[] => {
   const sortedMatches = [...matches].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   
   const now = new Date();
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(0, 0, 0, 0);
+
   const firstUpcomingMatch = sortedMatches.find(match => new Date(match.date) > now);
   
   if (!firstUpcomingMatch) return matches;
@@ -88,7 +92,7 @@ const nokaVeutPasAfficherTropDeMatchs = (matches: Match[]): Match[] => {
 
   return sortedMatches.filter(match => {
     const matchDate = new Date(match.date);
-    return matchDate >= firstMatchDate && matchDate <= cutoffDate;
+    return (matchDate >= yesterday && matchDate <= cutoffDate);
   });
 };
 
