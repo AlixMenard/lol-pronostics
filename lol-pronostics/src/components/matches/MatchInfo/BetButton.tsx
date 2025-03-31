@@ -54,7 +54,7 @@ interface BetButtonProps {
 
 export const BetButton = ({ isMatchStarted, hasBet, team1bet, team2bet, onClick }: BetButtonProps) => {
   const getContent = () => {
-    if (isMatchStarted) return "Match commencé";
+    if (isMatchStarted && team1bet) return `${team1bet} - ${team2bet}`;
     if (hasBet) {
       return (
         <>

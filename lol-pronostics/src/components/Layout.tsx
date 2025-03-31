@@ -1,7 +1,7 @@
 import { AppBar, Toolbar, Typography, Button, Box, useMediaQuery, useTheme, IconButton, Menu, MenuItem } from '@mui/material';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faChartBar, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faChartBar, faSignOutAlt, faCircleUser, faUserCircle, faFolder } from '@fortawesome/free-solid-svg-icons';
 import { useUser } from '../context/UserContext';
 import { styled } from '@mui/material/styles';
 import logo from "../assets/logo_mode_otp.png";
@@ -21,6 +21,7 @@ const StyledAppBar = styled(AppBar)`
 
 const StyledButton = styled(Button)`
   color: var(--text-color);
+  margin-right: 10px;
   &:hover {
     color: var(--primary-color);
   }
@@ -44,6 +45,7 @@ const UserSection = styled('div')`
   display: flex;
   align-items: center;
   margin-left: auto;
+  gap: 10px;
 `;
 
 const StyledUsername = styled(Typography)`
@@ -118,17 +120,16 @@ const Layout = () => {
                   <StyledIcon icon={faChartBar} />
                   Stats
                 </StyledButton>
+                <StyledButton color="inherit" onClick={() => navigate(`/predictions/${username}`)}>
+                  <StyledIcon icon={faFolder} />
+                  Mes prédiction
+                </StyledButton>
               </>
             )}
           </NavSection>
           {username && (
             <UserSection>
-              <StyledUsername 
-                onClick={() => navigate(`/predictions/${username}`)}
-                sx={{ mx: 2 }}
-              >
-                {username}
-              </StyledUsername>
+              {username} 
               <StyledButton color="inherit" onClick={handleLogout}>
                 <StyledIcon icon={faSignOutAlt} />
                 Déconnexion
