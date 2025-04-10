@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { TeamCode } from '../../types';
-import logosData from '../../assets/logos.json';
+import { api } from '../../services/api';
 import RGE from "../../assets/RGE.png"
+import { Loader } from './Loader';
 
 const Logo = styled('img')`
   width: 40px;
@@ -28,7 +30,31 @@ interface TeamLogoProps {
 }
 
 export const TeamLogo = ({ teamCode, size = 'large' }: TeamLogoProps) => {
-    
+  const [logo, setLogo] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLogo = async () => {
+      if (teamCode === 'TBD' || teamCode === 'RGE') {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await api.getTeamLogo(teamCode);
+        setLogo(response.data.url); // Modification ici pour accéder à response.data.url
+      } catch (error) {
+        console.error('Failed to fetch logo:', error);
+        setLogo(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLogo();
+  }, [teamCode]);
+
   if (teamCode === "TBD") {
     return <PlaceholderLogo>TBD</PlaceholderLogo>;
   }
@@ -48,12 +74,17 @@ export const TeamLogo = ({ teamCode, size = 'large' }: TeamLogoProps) => {
   }
 
   const getModifiedUrl = (url: string | null) => {
-    if (!url) return null;
-    return url.split('/revision')[0];
+    if (!url || typeof url !== 'string') return null;
+    const parts = url.split('/revision');
+    return parts[0];
   };
 
-  const logoUrl = teamCode in logosData ? getModifiedUrl(logosData[teamCode as Exclude<TeamCode, 'TBD'>]) : null;
+  const logoUrl = getModifiedUrl(logo);
   
+  if (loading) {
+    return <Loader />;
+  }
+
   if (!logoUrl) return null;
 
   return (
