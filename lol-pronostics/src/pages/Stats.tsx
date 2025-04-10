@@ -29,10 +29,20 @@ const StyledPaper = styled(Paper)`
   color: var(--text-color);
 `;
 
+const PseudoLink = styled(Link)`
+  color: var(--secondary-color);
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 interface RankingData {
   name: string;
   num_bets: number;
   score: number;
+  rating: number;
+  accuracy: number;
 }
 
 interface UserStatsRow {
@@ -41,6 +51,8 @@ interface UserStatsRow {
   total_score: number;
   details: Record<string, { num_bets: number; score: number }>;
 }
+
+
 
 const DetailRow = styled(TableRow)`
   background-color: rgba(255, 63, 9, 0.05);
@@ -95,6 +107,10 @@ const Row = ({ user, competitions }: { user: UserStatsRow; competitions: Competi
   );
 };
 
+const getPositionFromIndex = (index: number): number => {
+  return index + 1;
+};
+
 const Stats = () => {
   const [stats, setStats] = useState<RankingData[]>([]);
   const [competitions, setCompetitions] = useState<Competition[]>([]);
@@ -145,30 +161,39 @@ const Stats = () => {
       />
       <TableContainer component={StyledPaper}>
         <Table>
-          <TableHead>
+        <TableHead>
             <StyledTableRow>
               <StyledTableCell>Position</StyledTableCell>
               <StyledTableCell>Utilisateur</StyledTableCell>
               <StyledTableCell align="center">Nombre de paris</StyledTableCell>
               <StyledTableCell align="center">Score</StyledTableCell>
+              <StyledTableCell align="center">Précision globale</StyledTableCell>
+              <StyledTableCell align="center">Précision paris placés</StyledTableCell>
             </StyledTableRow>
           </TableHead>
           <TableBody>
-            {stats.map((stat, index) => (
-              <StyledTableRow key={stat.name}>
-                <StyledTableCell>{index + 1}</StyledTableCell>
-                <StyledTableCell>
-                  <Link 
-                    to={`/predictions/${stat.name}`}
-                    style={{ color: 'var(--secondary-color)', textDecoration: 'none' }}
-                  >
-                    {stat.name}
-                  </Link>
+            {stats.map((stat, index) => {
+              const firstIndexWithSameScore = stats.findIndex(s => s.score === stat.score);
+              const position = firstIndexWithSameScore + 1;
+
+    return (
+      <StyledTableRow key={stat.name}>
+        <StyledTableCell>{position}</StyledTableCell>
+        <StyledTableCell>
+          <PseudoLink 
+            to={`/predictions/${stat.name}`}
+            style={{ color: 'var(--secondary-color)', textDecoration: 'none' }}
+          >
+            {stat.name}
+          </PseudoLink>
                 </StyledTableCell>
                 <StyledTableCell align="center">{stat.num_bets}</StyledTableCell>
                 <StyledTableCell align="center">{stat.score}</StyledTableCell>
+                <StyledTableCell align="center">{(stat.rating * 100).toFixed(0)}%</StyledTableCell>
+                <StyledTableCell align="center">{(stat.accuracy * 100).toFixed(0)}%</StyledTableCell>
               </StyledTableRow>
-            ))}
+            );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

@@ -1,9 +1,9 @@
 import { styled } from '@mui/material/styles';
 
 const Logo = styled('img')`
-  width: 80px;
+  width: 48px;
   height: 48px;
-  object-fit: fill;
+  object-fit: contain;
   padding: 5px;
   padding-left: 12px;
 `;
