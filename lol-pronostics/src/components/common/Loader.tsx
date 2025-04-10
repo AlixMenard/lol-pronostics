@@ -18,8 +18,8 @@ const LoaderContainer = styled('div')`
 `;
 
 const SpinningLogo = styled('img')`
-  width: 100px;
-  height: 100px;
+  width: 4em;
+  height: 4em;
   animation: ${spin} 2s linear infinite;
 `;
 
