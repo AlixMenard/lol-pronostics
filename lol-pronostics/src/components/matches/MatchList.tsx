@@ -55,6 +55,7 @@ const groupMatchesByDate = (matches: Match[]): GroupedMatches => {
   }, {});
 };
 
+//fonction qui trie les faux matchs doublons renvoyés par l'api
 const filterDuplicateTBDMatches = (matches: Match[]): Match[] => {
   return matches.filter(match => {
     if (match.team1 !== 'TBD' && match.team2 !== 'TBD') {
@@ -110,6 +111,11 @@ export const MatchList = ({ matches, onMatchSelect, isMobile }: MatchListProps) 
   const filteredMatches = filterDuplicateTBDMatches(timeFilteredMatches);
   const groupedMatches = groupMatchesByDate(filteredMatches);
 
+  const isFirstMatchOfDay = (match: Match, dateMatches: Match[]): boolean => {
+    const matchTime = new Date(match.date).getTime();
+    return dateMatches.findIndex(m => new Date(m.date).getTime() === matchTime) === 0;
+  };
+
   return (
     <>
       <Typography variant="h6" sx={{ my: 2, px: 2 }}>
@@ -125,6 +131,7 @@ export const MatchList = ({ matches, onMatchSelect, isMobile }: MatchListProps) 
                   key={match.id}
                   match={match}
                   onBetClick={() => onMatchSelect(match)}
+                  isFirstMatch={isFirstMatchOfDay(match, dateMatches)}
                   isMobile={isMobile}
                 />
               ))}

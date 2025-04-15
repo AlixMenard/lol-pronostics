@@ -1,7 +1,7 @@
-import { AppBar, Toolbar, Typography, Button, Box, useMediaQuery, useTheme, IconButton, Menu, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Button, Box, useMediaQuery, useTheme, IconButton, Menu, MenuItem } from '@mui/material';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faChartBar, faSignOutAlt, faCircleUser, faUserCircle, faFolder } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faChartBar, faSignOutAlt, faFolder } from '@fortawesome/free-solid-svg-icons';
 import { useUser } from '../context/UserContext';
 import { styled } from '@mui/material/styles';
 import logo from "../assets/logo_mode_otp.png";
@@ -48,20 +48,11 @@ const UserSection = styled('div')`
   gap: 10px;
 `;
 
-const StyledUsername = styled(Typography)`
-  cursor: pointer;
-  color: var(--text-color);
-  &:hover {
-    color: var(--primary-color);
-    text-decoration: underline;
-  }
-`;
-
 const Layout = () => {
   const { username, logout } = useUser();
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down(900)); // Changé de 'sm' à 900
+  const isMobile = useMediaQuery(theme.breakpoints.down(900)); 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleLogout = () => {
