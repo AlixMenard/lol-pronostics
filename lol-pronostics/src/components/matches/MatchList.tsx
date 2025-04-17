@@ -5,7 +5,8 @@ import { MatchCard } from './MatchCard';
 
 interface MatchListProps {
   matches: Match[];
-  onMatchSelect: (match: Match, team1Logo: string | null, team2Logo: string | null) => void;
+  onMatchSelect: (match: Match) => void;
+  isMobile: boolean;
 }
 
 const ScrollableBox = styled(Box)`
@@ -24,28 +25,120 @@ const ScrollableBox = styled(Box)`
   }
 `;
 
-const GridLayout = styled('div')`
+const GridLayout = styled('div')<{ isMobile: boolean }>`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-  gap: 24px;
-  padding: 16px;
+  grid-template-columns: ${props => props.isMobile ? '1fr' : 'repeat(auto-fill, minmax(450px, 1fr))'};
+  gap: ${props => props.isMobile ? '12px' : '24px'};
+  padding: ${props => props.isMobile ? '8px' : '16px'};
 `;
 
-export const MatchList = ({ matches, onMatchSelect }: MatchListProps) => (
-  <>
-    <Typography variant="h6" sx={{ my: 2, px: 2 }}>
-      Matches
-    </Typography>
-    <ScrollableBox>
-      <GridLayout>
-        {matches.map((match) => (
-          <MatchCard
-            key={match.id}
-            match={match}
-            onBetClick={(team1Logo, team2Logo) => onMatchSelect(match, team1Logo, team2Logo)}
-          />
+type GroupedMatches = {
+  [key: string]: Match[];
+};
+
+const groupMatchesByDate = (matches: Match[]): GroupedMatches => {
+  const sorted = matches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  
+  return sorted.reduce((groups: GroupedMatches, match) => {
+    const date = new Date(match.date).toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(match);
+    return groups;
+  }, {});
+};
+
+//fonction qui trie les faux matchs doublons renvoyés par l'api
+const filterDuplicateTBDMatches = (matches: Match[]): Match[] => {
+  return matches.filter(match => {
+    if (match.team1 !== 'TBD' && match.team2 !== 'TBD') {
+      return true;
+    }
+
+    const sameTimeMatches = matches.filter(m => {
+      const matchTime = new Date(match.date).getTime();
+      const mTime = new Date(m.date).getTime();
+      return matchTime === mTime && m !== match;
+    });
+
+    return !sameTimeMatches.some(m => {
+      const currentTeam = match.team1 !== 'TBD' ? match.team1 : match.team2;
+      return m.team1 === currentTeam || m.team2 === currentTeam;
+    });
+  });
+};
+
+const nokaVeutPasAfficherTropDeMatchs = (matches: Match[]): Match[] => {
+  const sortedMatches = [...matches].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  
+  const now = new Date();
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(0, 0, 0, 0);
+
+  const firstUpcomingMatch = sortedMatches.find(match => new Date(match.date) > now);
+  
+  if (!firstUpcomingMatch) return matches;
+
+  const firstMatchDate = new Date(firstUpcomingMatch.date);
+  const cutoffDate = new Date(firstMatchDate);
+  cutoffDate.setDate(cutoffDate.getDate() + 6);
+
+  return sortedMatches.filter(match => {
+    const matchDate = new Date(match.date);
+    return (matchDate >= yesterday && matchDate <= cutoffDate);
+  });
+};
+
+const DateDivider = styled(Typography)`
+  color: var(--text-color);
+  padding: 16px;
+  margin-top: 16px;
+  font-weight: bold;
+  text-transform: capitalize;
+  border-bottom: 1px solid var(--secondary-color);
+`;
+
+export const MatchList = ({ matches, onMatchSelect, isMobile }: MatchListProps) => {
+  const timeFilteredMatches = nokaVeutPasAfficherTropDeMatchs(matches);
+  const filteredMatches = filterDuplicateTBDMatches(timeFilteredMatches);
+  const groupedMatches = groupMatchesByDate(filteredMatches);
+
+  const isFirstMatchOfDay = (match: Match, dateMatches: Match[]): boolean => {
+    const matchTime = new Date(match.date).getTime();
+    return dateMatches.findIndex(m => new Date(m.date).getTime() === matchTime) === 0;
+  };
+
+  return (
+    <>
+      <Typography variant="h6" sx={{ my: 2, px: 2 }}>
+        Matches
+      </Typography>
+      <ScrollableBox>
+        {Object.entries(groupedMatches).map(([date, dateMatches]) => (
+          <Box key={date}>
+            <DateDivider variant="h6">{date}</DateDivider>
+            <GridLayout isMobile={isMobile}>
+              {dateMatches.map((match) => (
+                <MatchCard
+                  key={match.id}
+                  match={match}
+                  onBetClick={() => onMatchSelect(match)}
+                  isFirstMatch={isFirstMatchOfDay(match, dateMatches)}
+                  isMobile={isMobile}
+                />
+              ))}
+            </GridLayout>
+          </Box>
         ))}
-      </GridLayout>
-    </ScrollableBox>
-  </>
-);
+      </ScrollableBox>
+    </>
+  );
+};

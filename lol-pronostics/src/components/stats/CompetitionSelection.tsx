@@ -1,23 +1,22 @@
 import { FormControl, Select, MenuItem, InputLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Competition } from '../../types';
+import { CompetitionLogo } from '../common/CompetitionLogo';
 
 const StyledFormControl = styled(FormControl)`
   margin-bottom: 24px;
   min-width: 200px;
+`;
+
+const MenuItemContent = styled('div')`
+  display: flex;
+  align-items: center;
+  gap: 12px;
   
-  .MuiInputLabel-root {
-    color: var(--text-color);
-  }
-  
-  .MuiOutlinedInput-root {
-    color: var(--text-color);
-    fieldset {
-      border-color: var(--secondary-color);
-    }
-    &:hover fieldset {
-      border-color: var(--secondary-color);
-    }
+  img {
+    width: 46px !important;
+    height: 32px !important;
+    padding: 0;
   }
 `;
 
@@ -31,19 +30,24 @@ export const CompetitionSelection = ({
   competitions,
   selectedCompetition,
   onSelectCompetition
-}: CompetitionSelectionProps) => (
-  <StyledFormControl>
-    <InputLabel>Compétition</InputLabel>
-    <Select
-      value={selectedCompetition || ''}
-      label="Compétition"
-      onChange={(e) => onSelectCompetition(e.target.value as number)}
-    >
-      {competitions.map((comp) => (
-        <MenuItem key={comp.id} value={comp.id}>
-          {comp.name}
-        </MenuItem>
-      ))}
-    </Select>
-  </StyledFormControl>
-);
+}: CompetitionSelectionProps) => {
+  return (
+    <StyledFormControl>
+      <InputLabel>Compétition</InputLabel>
+      <Select
+        value={selectedCompetition || ''}
+        label="Compétition"
+        onChange={(e) => onSelectCompetition(e.target.value as number)}
+      >
+        {competitions.map((comp) => (
+          <MenuItem key={comp.id} value={comp.id}>
+            <MenuItemContent>
+              <CompetitionLogo name={comp.name}  />
+              {comp.name}
+            </MenuItemContent>
+          </MenuItem>
+        ))}
+      </Select>
+    </StyledFormControl>
+  );
+};

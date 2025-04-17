@@ -6,6 +6,7 @@ import { api } from '../services/api';
 import { Prediction } from '../types';
 import { useUser } from '../context/UserContext';
 import { Loader } from '../components/common/Loader';
+import { TeamLogo } from '../components/common/TeamLogo';
 
 const StyledPaper = styled(Paper)`
   background-color: var(--primary-color);
@@ -22,6 +23,36 @@ const StyledTableRow = styled(TableRow)`
   &:hover {
     background-color: rgba(255, 63, 9, 0.1);
   }
+`;
+
+const MatchCell = styled('div')`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-start;
+  min-width: 250px;
+`;
+
+const MatchTitle = styled(Typography)`
+  width: 120px;
+  text-align: center;
+  flex-shrink: 0;
+`;
+
+const LogoContainer = styled('div')`
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+`;
+
+const TeamDisplay = styled('div')`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const formatDate = (dateString: string) => {
@@ -44,10 +75,8 @@ const UserPredictions = () => {
       if (!username) return;
       
       try {
-        // Récupérer d'abord l'ID de l'utilisateur
         const userResponse = await api.signin(username);
         if (userResponse.status === 200 && userResponse.data.id) {
-          // Utiliser l'ID pour récupérer les prédictions
           const predictionsResponse = await api.getBets(userResponse.data.id);
           setPredictions(predictionsResponse.data);
         }
@@ -76,7 +105,7 @@ const UserPredictions = () => {
         <Table>
           <TableHead>
             <StyledTableRow>
-              <StyledTableCell>Date</StyledTableCell>
+              <StyledTableCell>Date du match</StyledTableCell>
               <StyledTableCell>Match</StyledTableCell>
               <StyledTableCell align="center">Pronostic</StyledTableCell>
               <StyledTableCell align="center">Score Final</StyledTableCell>
@@ -92,7 +121,15 @@ const UserPredictions = () => {
                 <StyledTableRow key={prediction.id}>
                   <StyledTableCell>{formatDate(prediction.date)}</StyledTableCell>
                   <StyledTableCell>
-                    {prediction.team1} vs {prediction.team2}
+                    <MatchCell>
+                      <LogoContainer>
+                        <TeamLogo teamCode={prediction.team1} size="small" />
+                      </LogoContainer>
+                      <MatchTitle>{prediction.team1} vs {prediction.team2}</MatchTitle>
+                      <LogoContainer>
+                        <TeamLogo teamCode={prediction.team2} size="small" />
+                      </LogoContainer>
+                    </MatchCell>
                   </StyledTableCell>
                   <StyledTableCell align="center">
                     {prediction.team1bet} - {prediction.team2bet}
