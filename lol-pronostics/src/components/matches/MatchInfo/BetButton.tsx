@@ -13,6 +13,10 @@ const Button = styled(StyledButton)<{ hasbet: 'true' | 'false'; disabled: boolea
     return 'var(--secondary-color)';
   }};
 
+  &.Mui-disabled {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
   .default-text,
   .hover-text {
     position: absolute;
