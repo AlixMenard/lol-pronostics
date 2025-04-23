@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 import { StyledButton } from '../../styled/StyledButton';
+import { MouseEvent } from 'react';
 
 const Button = styled(StyledButton)<{ hasbet: 'true' | 'false'; disabled: boolean }>`
   min-width: 120px;
@@ -53,7 +54,7 @@ interface BetButtonProps {
   hasBet: boolean;
   team1bet?: number;
   team2bet?: number;
-  onClick: () => void;
+  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const BetButton = ({ isMatchStarted, hasBet, team1bet, team2bet, onClick }: BetButtonProps) => {

@@ -6,6 +6,7 @@ import { MatchCard } from './MatchCard';
 interface MatchListProps {
   matches: Match[];
   onMatchSelect: (match: Match) => void;
+  onStatsClick: (matchId: number) => void;
   isMobile: boolean;
 }
 
@@ -106,7 +107,7 @@ const DateDivider = styled(Typography)`
   border-bottom: 1px solid var(--secondary-color);
 `;
 
-export const MatchList = ({ matches, onMatchSelect, isMobile }: MatchListProps) => {
+export const MatchList = ({ matches, onMatchSelect, onStatsClick, isMobile }: MatchListProps) => {
   const timeFilteredMatches = nokaVeutPasAfficherTropDeMatchs(matches);
   const filteredMatches = filterDuplicateTBDMatches(timeFilteredMatches);
   const groupedMatches = groupMatchesByDate(filteredMatches);
@@ -131,6 +132,7 @@ export const MatchList = ({ matches, onMatchSelect, isMobile }: MatchListProps) 
                   key={match.id}
                   match={match}
                   onBetClick={() => onMatchSelect(match)}
+                  onStatsClick={onStatsClick}
                   isFirstMatch={isFirstMatchOfDay(match, dateMatches)}
                   isMobile={isMobile}
                 />

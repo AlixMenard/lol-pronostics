@@ -1,22 +1,39 @@
 import { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { TeamCode, Match } from '../types';
-import logosData from '../assets/logos.json';
+import { Match } from '../types';
 import { BoNumber } from './common/BoNumber';
 import { TeamLogo } from './common/TeamLogo';
 
 const StyledDialog = styled(Dialog)`
   .MuiPaper-root {
     background-color: var(--primary-color);
-    color: var(--text-color);
-    border: 1px solid var(--secondary-color); 
+    color: var (--text-color);
+    border: 1px solid var(--secondary-color);
+    animation: slideIn 0.3s ease-out;
+    width: 400px;
+    max-width: 90vw;
+  }
+
+  .MuiDialogContent-root {
+    overflow: hidden;
+  }
+
+  @keyframes slideIn {
+    0% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 `;
 
 const StyledButton = styled(Button)`
   background-color: var(--secondary-color);
-  color: var(--text-color);
+  color: var (--text-color);
   &:hover {
     background-color: var(--primary-color);
   }
@@ -35,6 +52,72 @@ const TitleContainer = styled('div')`
   gap: 8px;
 `;
 
+const TeamSelectionContainer = styled(Box)`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 8px 0;
+`;
+
+const TeamButton = styled(Button)<{ selected?: boolean }>`
+  padding: 16px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  background-color: ${props => props.selected ? 'rgba(255, 63, 9, 0.2)' : 'transparent'};
+  border: 2px solid ${props => props.selected ? 'rgba(255, 63, 9, 0.7)' : 'transparent'};
+  
+  &:hover {
+    background-color: rgba(255, 63, 9, 0.1);
+  }
+`;
+
+const ScoreButton = styled(Button)`
+  margin: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  
+  &:hover {
+    background-color: rgba(255, 63, 9, 0.2);
+  }
+`;
+
+const ScoreOptionsContainer = styled(Box)`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  animation: expandHeight 0.3s ease-out;
+  overflow: hidden;
+
+  @keyframes expandHeight {
+    0% {
+      max-height: 0;
+      opacity: 0;
+    }
+    100% {
+      max-height: 120px;
+      opacity: 1;
+    }
+  }
+`;
+
+interface DialogContentStyledProps {
+  hasselection?: boolean;
+}
+
+const DialogContentStyled = styled(DialogContent)<DialogContentStyledProps>`
+  transition: min-height 0.3s ease-out;
+  min-height: ${props => props.hasselection ? '180px' : '100px'}; // Réduit de 220px/120px
+  padding: 16px 16px 8px 16px; // Réduit le padding bottom
+  display: flex;
+  flex-direction: column;
+`;
+
+const StyledDialogActions = styled(DialogActions)`
+  padding: 8px; // Réduit le padding des actions
+  min-height: 42px; // Hauteur minimale fixe
+`;
+
 interface BetModalProps {
   open: boolean;
   onClose: () => void;
@@ -43,72 +126,85 @@ interface BetModalProps {
 }
 
 const BetModal = ({ open, onClose, match, onSubmit }: BetModalProps) => {
-  const [score1, setScore1] = useState<string>('');
-  const [score2, setScore2] = useState<string>('');
+  const [selectedTeam, setSelectedTeam] = useState<1 | 2 | null>(null);
 
-  const handleScoreChange = (setValue: (value: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    var maxValue = match.bo/2+0.5
-    console.log(maxValue)
-    if (isNaN(value) || value < 0) {
-      setValue('0');
-    } else if (value > maxValue) {
-      setValue(maxValue.toString());
-    } else {
-      setValue(e.target.value);
+  const getScoreOptions = (bo: number) => {
+    const maxWins = Math.floor((bo - 1) / 2) + 1; 
+    const options = [];
+    
+    for (let loserScore = 0; loserScore < maxWins; loserScore++) {
+      options.push({ 
+        winner: maxWins,
+        loser: loserScore 
+      });
     }
+    
+    return options;
   };
 
-  const handleSubmit = () => {
-    const score1Num = parseInt(score1);
-    const score2Num = parseInt(score2);
+  const handleTeamSelect = (team: 1 | 2) => {
+    setSelectedTeam(team);
+  };
+
+  const handleScoreSelect = (winnerScore: number, loserScore: number) => {
+    if (!selectedTeam) return;
+
+    const score1 = selectedTeam === 1 ? winnerScore : loserScore;
+    const score2 = selectedTeam === 1 ? loserScore : winnerScore;
     
-    if (!isNaN(score1Num) && !isNaN(score2Num)) {
-      onSubmit(score1Num, score2Num);
-      setScore1('');
-      setScore2('');
-      onClose();
-    }
+    onSubmit(score1, score2);
+    setSelectedTeam(null);
+    onClose();
   };
 
   return (
-    <StyledDialog open={open} onClose={onClose}>
+    <StyledDialog
+      open={open}
+      onClose={onClose}
+      closeAfterTransition
+      TransitionProps={{ timeout: 300 }}
+    >
       <DialogTitle>
         <TitleContainer>
-          Pronostiquer le match
+          Choisir le vainqueur
           <BoNumber bo={match.bo} />
         </TitleContainer>
       </DialogTitle>
-      <DialogContent>
-        <TeamContainer>
-          <TeamLogo teamCode={match.team1} />
-          <TextField
-            label={match.team1}
-            type="number"
-            value={score1}
-            onChange={handleScoreChange(setScore1)}
-            inputProps={{ min: 0, max: match.bo/2+0.5 }}
-            fullWidth
-          />
-        </TeamContainer>
-        <TeamContainer>
-          <TeamLogo teamCode={match.team2} />
-          <TextField
-            label={match.team2}
-            type="number"
-            value={score2}
-            onChange={handleScoreChange(setScore2)}
-            inputProps={{ min: 0, max: match.bo }}
-            fullWidth
-          />
-        </TeamContainer>
-      </DialogContent>
-      <DialogActions>
+      
+      <DialogContentStyled hasselection={!!selectedTeam}>
+        <TeamSelectionContainer>
+          <TeamButton
+            onClick={() => handleTeamSelect(1)}
+            selected={selectedTeam === 1}
+          >
+            <TeamLogo teamCode={match.team1} />
+          </TeamButton>
+          <TeamButton
+            onClick={() => handleTeamSelect(2)}
+            selected={selectedTeam === 2}
+          >
+            <TeamLogo teamCode={match.team2} />
+          </TeamButton>
+        </TeamSelectionContainer>
+
+        {selectedTeam && (
+          <ScoreOptionsContainer>
+            {getScoreOptions(match.bo).map(({winner, loser}) => (
+              <ScoreButton
+                key={`${winner}-${loser}`}
+                onClick={() => handleScoreSelect(winner, loser)}
+                variant="contained"
+              >
+                {winner} - {loser}
+              </ScoreButton>
+            ))}
+          </ScoreOptionsContainer>
+        )}
+      </DialogContentStyled>
+
+      <StyledDialogActions>
         <Button onClick={onClose} color="inherit">Annuler</Button>
-        <StyledButton onClick={handleSubmit} variant="contained">
-          Valider
-        </StyledButton>
-      </DialogActions>
+      </StyledDialogActions>
     </StyledDialog>
   );
 };

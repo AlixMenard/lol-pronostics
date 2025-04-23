@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = "https://pronomodo.vbilla.fr";
+const TEST_API = process.env.REACT_APP_TEST_API;
+const PROD_API = process.env.REACT_APP_PROD_API;
+const API_BASE_URL = process.env.NODE_ENV === 'development' ? TEST_API : PROD_API;
 
 export const api = {
   signin: (modo: string) => 
@@ -24,5 +26,8 @@ export const api = {
     axios.get(`${API_BASE_URL}/ranking`, { params: { competition } }),
 
   getTeamLogo: (team: string) =>
-    axios.get(`${API_BASE_URL}/logo`, { params: { team } })
+    axios.get(`${API_BASE_URL}/team/logo`, { params: { team } }),
+
+  getMatchStats: (matchId: number) =>
+    axios.get(`${API_BASE_URL}/match/stats`, { params: { id: matchId } })
 };

@@ -1,8 +1,7 @@
+import { useMemo } from 'react';
 import { List, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
-import { leaguepediaApi } from '../../services/leaguepediaApi';
-import { Competition } from '../../types';
+import { Competition, Match } from '../../types';
 import { CompetitionItem } from './CompetitionItem';
 import { Loader } from '../common/Loader';
 
@@ -25,24 +24,44 @@ const StyledList = styled(List)<{ isMobile?: boolean }>`
 
 interface CompetitionListProps {
   competitions: Competition[];
+  matches: Match[];
   selectedCompetition: number | null;
   onSelectCompetition: (id: number) => void;
-  isMobile?: boolean; // Ajout de la prop optionnelle
+  isMobile?: boolean;
 }
 
-export const CompetitionList = ({ 
-  competitions, 
-  selectedCompetition, 
+export const CompetitionList = ({
+  competitions,
+  matches,
+  selectedCompetition,
   onSelectCompetition,
-  isMobile 
+  isMobile,
 }: CompetitionListProps) => {
+  const sortedCompetitions = useMemo(() => {
+    return [...competitions].sort((a, b) => {
+      const nextMatchA = matches
+        .filter(m => m.competition_id === a.id && new Date(m.date) > new Date())
+        .sort((m1, m2) => new Date(m1.date).getTime() - new Date(m2.date).getTime())[0];
+      
+      const nextMatchB = matches
+        .filter(m => m.competition_id === b.id && new Date(m.date) > new Date())
+        .sort((m1, m2) => new Date(m1.date).getTime() - new Date(m2.date).getTime())[0];
+
+      if (!nextMatchA && !nextMatchB) return 0;
+      if (!nextMatchA) return 1;
+      if (!nextMatchB) return -1;
+
+      return new Date(nextMatchA.date).getTime() - new Date(nextMatchB.date).getTime();
+    });
+  }, [competitions, matches]);
+
   return (
     <>
       <Typography variant="h6" sx={{ my: 2 }}>
         Compétitions
       </Typography>
       <StyledList isMobile={isMobile}>
-        {competitions.map((competition) => (
+        {sortedCompetitions.map((competition) => (
           <CompetitionItem
             key={competition.id}
             competition={competition}

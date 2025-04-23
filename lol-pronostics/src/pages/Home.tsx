@@ -5,14 +5,14 @@ import { useUser } from '../context/UserContext';
 import { CompetitionList } from '../components/competitions/CompetitionList';
 import { MatchList } from '../components/matches/MatchList';
 import BetModal from '../components/BetModal';
-import { leaguepediaApi } from '../services/leaguepediaApi';
 import { Competition, Match, TeamLogos, Prediction } from '../types';
 import styled from 'styled-components';
 import { Loader } from '../components/common/Loader';
 import { CompetitionSelection } from '../components/stats/CompetitionSelection';
+import { StatsModal } from '../components/modals/StatsModal';
 
 const StyledContainer = styled(Container)`
-  height: calc(100vh - 80px); // 80px corresponds to the header height
+  height: calc(100vh - 80px); // 80px corresponds à la hauteur de l'en-tête
   overflow: hidden;
 `;
 
@@ -26,7 +26,7 @@ const ContentContainer = styled('div')<ContentContainerProps>`
 
 const Home = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down(1000)); // Changé de 'sm' à 900
+  const isMobile = useMediaQuery(theme.breakpoints.down(1000)); 
 
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
@@ -35,6 +35,7 @@ const Home = () => {
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [selectedMatchLogos, setSelectedMatchLogos] = useState<{ team1: string | null, team2: string | null }>({ team1: null, team2: null });
   const { userId } = useUser();
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchCompetitions = async () => {
@@ -116,6 +117,14 @@ const Home = () => {
     setSelectedMatch(match);
   };
 
+  const handleStatsClick = (matchId: number) => {
+    setSelectedMatchId(matchId);
+  };
+
+  const handleBetClick = (match: Match) => {
+    setSelectedMatch(match);
+  };
+
   if (loading) {
     return <Loader />;
   }
@@ -129,9 +138,17 @@ const Home = () => {
             selectedCompetition={selectedCompetition}
             onSelectCompetition={setSelectedCompetition}
           />
+          <CompetitionList  // Ajouter CompetitionList ici pour la version mobile
+            competitions={competitions}
+            matches={matches}
+            selectedCompetition={selectedCompetition}
+            onSelectCompetition={setSelectedCompetition}
+            isMobile={isMobile}
+          />
           <MatchList
             matches={matches}
-            onMatchSelect={handleMatchSelect}
+            onMatchSelect={handleBetClick}
+            onStatsClick={handleStatsClick}
             isMobile={isMobile}
           />
         </ContentContainer>
@@ -140,6 +157,7 @@ const Home = () => {
           <Grid item xs={3}>
             <CompetitionList
               competitions={competitions}
+              matches={matches}
               selectedCompetition={selectedCompetition}
               onSelectCompetition={setSelectedCompetition}
               isMobile={isMobile}
@@ -148,7 +166,8 @@ const Home = () => {
           <Grid item xs={9}>
             <MatchList
               matches={matches}
-              onMatchSelect={handleMatchSelect}
+              onMatchSelect={handleBetClick}
+              onStatsClick={handleStatsClick}
               isMobile={isMobile}
             />
           </Grid>
@@ -163,6 +182,12 @@ const Home = () => {
           onSubmit={handleBetSubmit}
         />
       )}
+
+      <StatsModal
+        matchId={selectedMatchId}
+        open={!!selectedMatchId}
+        onClose={() => setSelectedMatchId(null)}
+      />
     </StyledContainer>
   );
 };

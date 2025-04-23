@@ -1,7 +1,17 @@
 import { styled } from '@mui/material/styles';
 import { useMatchTime } from '../../hooks/useMatchTime';
-import { MatchContent, MatchCardProps } from './MatchInfo/MatchContent';
+import { MatchContent } from './MatchInfo/MatchContent';
 import { BetButton } from './MatchInfo/BetButton';
+import { Match } from '../../types';
+import { MouseEvent } from 'react';
+
+interface MatchCardProps {
+  match: Match;
+  onBetClick: (match: Match) => void;
+  onStatsClick: (matchId: number) => void;
+  isMobile: boolean;
+  isFirstMatch?: boolean;
+}
 
 const MatchBox = styled('div')<{ isMobile: boolean }>`
   padding: ${props => props.isMobile ? '12px' : '16px'};
@@ -20,20 +30,38 @@ const MatchBox = styled('div')<{ isMobile: boolean }>`
   }
 `;
 
-export const MatchCard = ({ match, onBetClick, isMobile, isFirstMatch = false }: MatchCardProps) => {
+export const MatchCard = ({ match, onBetClick, onStatsClick, isMobile, isFirstMatch = false }: MatchCardProps) => {
   const { getAdjustedMatchTime } = useMatchTime();
   const isMatchStarted = getAdjustedMatchTime(match.date, match.bo, isFirstMatch) <= new Date();
   const hasBet = !!match.userBet;
+  const isTbd = match.team1 === "TBD" || match.team2 === "TBD";
+
+  const handleClick = () => {
+    if (!isTbd) {
+      onStatsClick(match.id);
+    }
+  };
+
+  const handleBetClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (!isMatchStarted) {
+      onBetClick(match);
+    }
+  };
 
   return (
-    <MatchBox isMobile={isMobile}>
+    <MatchBox 
+      isMobile={isMobile} 
+      onClick={handleClick}
+      style={{ cursor: isTbd ? 'default' : 'pointer' }}
+    >
       <MatchContent match={match} isMobile={isMobile} />
       <BetButton 
         isMatchStarted={isMatchStarted}
         hasBet={hasBet}
         team1bet={match.userBet?.team1bet}
         team2bet={match.userBet?.team2bet}
-        onClick={() => !isMatchStarted && onBetClick(match)}
+        onClick={handleBetClick}
       />
     </MatchBox>
   );
