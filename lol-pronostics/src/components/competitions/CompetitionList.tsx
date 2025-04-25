@@ -3,7 +3,6 @@ import { List, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Competition, Match } from '../../types';
 import { CompetitionItem } from './CompetitionItem';
-import { Loader } from '../common/Loader';
 
 const StyledList = styled(List)<{ isMobile?: boolean }>`
   background-color: var(--primary-color);
@@ -37,23 +36,23 @@ export const CompetitionList = ({
   onSelectCompetition,
   isMobile,
 }: CompetitionListProps) => {
+
+
   const sortedCompetitions = useMemo(() => {
+    const now = new Date().getTime();
     return [...competitions].sort((a, b) => {
-      const nextMatchA = matches
-        .filter(m => m.competition_id === a.id && new Date(m.date) > new Date())
-        .sort((m1, m2) => new Date(m1.date).getTime() - new Date(m2.date).getTime())[0];
+      const startA = new Date(a.start).getTime();
+      const startB = new Date(b.start).getTime();
       
-      const nextMatchB = matches
-        .filter(m => m.competition_id === b.id && new Date(m.date) > new Date())
-        .sort((m1, m2) => new Date(m1.date).getTime() - new Date(m2.date).getTime())[0];
-
-      if (!nextMatchA && !nextMatchB) return 0;
-      if (!nextMatchA) return 1;
-      if (!nextMatchB) return -1;
-
-      return new Date(nextMatchA.date).getTime() - new Date(nextMatchB.date).getTime();
+      const isRunningA = startA <= now;
+      const isRunningB = startB <= now;
+      
+      if (isRunningA && !isRunningB) return -1;
+      if (!isRunningA && isRunningB) return 1;
+      
+      return startA - startB;
     });
-  }, [competitions, matches]);
+  }, [competitions]);
 
   return (
     <>

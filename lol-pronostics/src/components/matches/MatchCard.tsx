@@ -57,7 +57,7 @@ export const MatchCard = ({ match, onBetClick, onStatsClick, isMobile, isFirstMa
     >
       <MatchContent match={match} isMobile={isMobile} />
       <BetButton 
-        isMatchStarted={isMatchStarted}
+        isMatchStarted={isMatchStarted || isTbd}
         hasBet={hasBet}
         team1bet={match.userBet?.team1bet}
         team2bet={match.userBet?.team2bet}

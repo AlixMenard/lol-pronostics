@@ -4,9 +4,17 @@ const TEST_API = process.env.REACT_APP_TEST_API;
 const PROD_API = process.env.REACT_APP_PROD_API;
 const API_BASE_URL = process.env.NODE_ENV === 'development' ? TEST_API : PROD_API;
 
+interface SignInResponse {
+  id: number;
+  name: string;
+  token: string;
+}
+
 export const api = {
-  signin: (modo: string) => 
-    axios.post(`${API_BASE_URL}/signin`, null, { params: { modo } }),
+  signin: (modo: string, password: string) => 
+    axios.post(`${API_BASE_URL}/signin`, null, { 
+      params: { modo, password }
+    }),
 
   getCompetitions: () => 
     axios.get(`${API_BASE_URL}/competitions`),
@@ -18,6 +26,8 @@ export const api = {
     axios.post(`${API_BASE_URL}/bet`, null, { 
       params: { modo, gameid, score1, score2 } 
     }),
+  getUser: (username: string) => 
+    axios.get(`${API_BASE_URL}/user`, { params: { username } }),
 
   getBets: (modo: number) => 
     axios.get(`${API_BASE_URL}/bets`, { params: { modo } }),

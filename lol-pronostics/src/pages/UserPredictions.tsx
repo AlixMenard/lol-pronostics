@@ -4,7 +4,6 @@ import { Container, Typography, Paper, Table, TableBody, TableCell, TableContain
 import { styled } from '@mui/material/styles';
 import { api } from '../services/api';
 import { Prediction } from '../types';
-import { useUser } from '../context/UserContext';
 import { Loader } from '../components/common/Loader';
 import { TeamLogo } from '../components/common/TeamLogo';
 
@@ -49,12 +48,6 @@ const LogoContainer = styled('div')`
   flex-shrink: 0;
 `;
 
-const TeamDisplay = styled('div')`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('fr-FR', {
     day: '2-digit',
@@ -75,7 +68,7 @@ const UserPredictions = () => {
       if (!username) return;
       
       try {
-        const userResponse = await api.signin(username);
+        const userResponse = await api.getUser(username);
         if (userResponse.status === 200 && userResponse.data.id) {
           const predictionsResponse = await api.getBets(userResponse.data.id);
           setPredictions(predictionsResponse.data);

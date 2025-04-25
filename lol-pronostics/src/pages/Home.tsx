@@ -4,8 +4,8 @@ import { api } from '../services/api';
 import { useUser } from '../context/UserContext';
 import { CompetitionList } from '../components/competitions/CompetitionList';
 import { MatchList } from '../components/matches/MatchList';
-import BetModal from '../components/BetModal';
-import { Competition, Match, TeamLogos, Prediction } from '../types';
+import BetModal from '../components/modals/BetModal';
+import { Competition, Match, Prediction } from '../types';
 import styled from 'styled-components';
 import { Loader } from '../components/common/Loader';
 import { CompetitionSelection } from '../components/stats/CompetitionSelection';
@@ -33,7 +33,6 @@ const Home = () => {
   const [selectedCompetition, setSelectedCompetition] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const [selectedMatchLogos, setSelectedMatchLogos] = useState<{ team1: string | null, team2: string | null }>({ team1: null, team2: null });
   const { userId } = useUser();
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
 
@@ -111,10 +110,6 @@ const Home = () => {
     } catch (error) {
       console.error('Failed to place bet:', error);
     }
-  };
-
-  const handleMatchSelect = (match: Match) => {
-    setSelectedMatch(match);
   };
 
   const handleStatsClick = (matchId: number) => {

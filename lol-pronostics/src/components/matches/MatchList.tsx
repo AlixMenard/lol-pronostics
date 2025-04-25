@@ -56,7 +56,6 @@ const groupMatchesByDate = (matches: Match[]): GroupedMatches => {
   }, {});
 };
 
-//fonction qui trie les faux matchs doublons renvoyés par l'api
 const filterDuplicateTBDMatches = (matches: Match[]): Match[] => {
   return matches.filter(match => {
     if (match.team1 !== 'TBD' && match.team2 !== 'TBD') {

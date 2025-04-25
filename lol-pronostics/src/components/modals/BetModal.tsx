@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Match } from '../types';
-import { BoNumber } from './common/BoNumber';
-import { TeamLogo } from './common/TeamLogo';
+import { Match } from '../../types';
+import { BoNumber } from '../common/BoNumber';
+import { TeamLogo } from '../common/TeamLogo';
 
 const StyledDialog = styled(Dialog)`
   .MuiPaper-root {
@@ -31,20 +31,6 @@ const StyledDialog = styled(Dialog)`
   }
 `;
 
-const StyledButton = styled(Button)`
-  background-color: var(--secondary-color);
-  color: var (--text-color);
-  &:hover {
-    background-color: var(--primary-color);
-  }
-`;
-
-const TeamContainer = styled(Box)`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-`;
 
 const TitleContainer = styled('div')`
   display: flex;
@@ -107,25 +93,25 @@ interface DialogContentStyledProps {
 
 const DialogContentStyled = styled(DialogContent)<DialogContentStyledProps>`
   transition: min-height 0.3s ease-out;
-  min-height: ${props => props.hasselection ? '180px' : '100px'}; // Réduit de 220px/120px
-  padding: 16px 16px 8px 16px; // Réduit le padding bottom
+  min-height: ${props => props.hasselection ? '180px' : '100px'}; 
+  padding: 16px 16px 8px 16px; 
   display: flex;
   flex-direction: column;
 `;
 
 const StyledDialogActions = styled(DialogActions)`
-  padding: 8px; // Réduit le padding des actions
-  min-height: 42px; // Hauteur minimale fixe
+  padding: 8px; 
+  min-height: 42px; 
 `;
 
-interface BetModalProps {
+export interface BetModalProps {
   open: boolean;
   onClose: () => void;
   match: Match;
   onSubmit: (score1: number, score2: number) => void;
 }
 
-const BetModal = ({ open, onClose, match, onSubmit }: BetModalProps) => {
+export const BetModal = ({ open, onClose, match, onSubmit }: BetModalProps) => {
   const [selectedTeam, setSelectedTeam] = useState<1 | 2 | null>(null);
 
   const getScoreOptions = (bo: number) => {
