@@ -1,23 +1,25 @@
 {
   "files": {
     "main.css": "/lol-pronostics/static/css/main.99b84c99.css",
-    "main.js": "/lol-pronostics/static/js/main.b7d9d942.js",
+    "main.js": "/lol-pronostics/static/js/main.498da9ef.js",
     "static/media/msi.png": "/lol-pronostics/static/media/msi.ef869b0b653ee4424836.png",
     "static/media/RGE.png": "/lol-pronostics/static/media/RGE.32db23c02b32f78ed16a.png",
     "static/media/cde.png": "/lol-pronostics/static/media/cde.be8576bdfc825a9f859a.png",
     "static/media/logo_mode_otp.png": "/lol-pronostics/static/media/logo_mode_otp.1e96d7d16338878c0ec5.png",
     "static/media/em.png": "/lol-pronostics/static/media/em.a3b595165b3a51fd205d.png",
     "static/media/worlds.png": "/lol-pronostics/static/media/worlds.59b3111e64f58d078dd5.png",
+    "static/media/lcp.png": "/lol-pronostics/static/media/lcp.135ecda1099c0f63198d.png",
+    "static/media/lpl.png": "/lol-pronostics/static/media/lpl.a22a4c661b74495921cc.png",
     "static/media/lec.png": "/lol-pronostics/static/media/lec.7c9828439de4e9f5633f.png",
     "static/media/div2.png": "/lol-pronostics/static/media/div2.216b540106c7b386e15f.png",
     "static/media/lfl.png": "/lol-pronostics/static/media/lfl.e79357bbd3a6a49e1da8.png",
     "static/media/cdf.png": "/lol-pronostics/static/media/cdf.3e7ba5ab1afa7eaabc8f.png",
     "index.html": "/lol-pronostics/index.html",
     "main.99b84c99.css.map": "/lol-pronostics/static/css/main.99b84c99.css.map",
-    "main.b7d9d942.js.map": "/lol-pronostics/static/js/main.b7d9d942.js.map"
+    "main.498da9ef.js.map": "/lol-pronostics/static/js/main.498da9ef.js.map"
   },
   "entrypoints": [
     "static/css/main.99b84c99.css",
-    "static/js/main.b7d9d942.js"
+    "static/js/main.498da9ef.js"
   ]
 }
