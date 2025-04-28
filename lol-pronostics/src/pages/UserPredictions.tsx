@@ -74,7 +74,7 @@ const UserPredictions = () => {
           setPredictions(predictionsResponse.data);
         }
       } catch (error) {
-        console.error('Failed to fetch predictions:', error);
+        // Error silently handled
       } finally {
         setLoading(false);
       }

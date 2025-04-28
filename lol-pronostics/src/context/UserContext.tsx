@@ -10,7 +10,10 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [userId, setUserId] = useState<number | null>(null);
+  const [userId, setUserId] = useState<number | null>(() => {
+    const user = authService.getUser();
+    return user ? user.id : null;
+  });
 
   const logout = () => {
     authService.logout();

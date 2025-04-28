@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Container, Grid, useTheme, useMediaQuery } from '@mui/material';
 import { api } from '../services/api';
 import { useUser } from '../context/UserContext';
+import { authService } from '../services/auth.service';
 import { CompetitionList } from '../components/competitions/CompetitionList';
 import { MatchList } from '../components/matches/MatchList';
 import BetModal from '../components/modals/BetModal';
@@ -12,7 +13,7 @@ import { CompetitionSelection } from '../components/stats/CompetitionSelection';
 import { StatsModal } from '../components/modals/StatsModal';
 
 const StyledContainer = styled(Container)`
-  height: calc(100vh - 80px); // 80px corresponds à la hauteur de l'en-tête
+  height: calc(100vh - 80px);
   overflow: hidden;
 `;
 
@@ -44,8 +45,8 @@ const Home = () => {
         if (response.data.length > 0) {
           setSelectedCompetition(response.data[0].id);
         }
-      } catch (error) {
-        console.error('Failed to fetch competitions:', error);
+      } catch {
+        // Error silently handled
       } finally {
         setLoading(false);
       }
@@ -80,8 +81,8 @@ const Home = () => {
         });
         
         setMatches(matchesWithBets);
-      } catch (error) {
-        console.error('Failed to fetch matches:', error);
+      } catch {
+        // Error silently handled
       }
     };
     fetchMatches();
@@ -90,8 +91,11 @@ const Home = () => {
   const handleBetSubmit = async (score1: number, score2: number) => {
     if (!userId || !selectedMatch) return;
     
+    const token = authService.getToken();
+    if (!token) return;
+    
     try {
-      await api.placeBet(userId, selectedMatch.id, score1, score2);
+      await api.placeBet(userId, token, selectedMatch.id, score1, score2);
       
       setMatches(matches.map(match => {
         if (match.id === selectedMatch.id) {
@@ -107,8 +111,8 @@ const Home = () => {
       }));
       
       setSelectedMatch(null);
-    } catch (error) {
-      console.error('Failed to place bet:', error);
+    } catch {
+      // Error silently handled
     }
   };
 
@@ -133,7 +137,7 @@ const Home = () => {
             selectedCompetition={selectedCompetition}
             onSelectCompetition={setSelectedCompetition}
           />
-          <CompetitionList  // Ajouter CompetitionList ici pour la version mobile
+          <CompetitionList  
             competitions={competitions}
             matches={matches}
             selectedCompetition={selectedCompetition}

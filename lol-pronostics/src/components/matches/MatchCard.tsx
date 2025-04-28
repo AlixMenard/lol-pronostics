@@ -14,16 +14,16 @@ interface MatchCardProps {
 }
 
 const MatchBox = styled('div')<{ isMobile: boolean }>`
-  padding: ${props => props.isMobile ? '12px' : '16px'};
-  margin-bottom: 8px;
+  padding: ${props => props.isMobile ? '8px' : '12px'};
+  margin-bottom: 6px;
   background-color: rgb(46, 46, 46);
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
-  height: ${props => props.isMobile ? '80px' : '100px'};
+  height: ${props => props.isMobile ? '60px' : '80px'};
   box-sizing: border-box;
   &:hover {
     background-color: rgba(255, 63, 9, 0.1);

@@ -22,10 +22,17 @@ export const api = {
   getMatches: (competition: number) => 
     axios.get(`${API_BASE_URL}/matches`, { params: { competition } }),
 
-  placeBet: (modo: number, gameid: number, score1: number, score2: number) => 
+  placeBet: (modo: number, token: string, gameid: number, score1: number, score2: number) => 
     axios.post(`${API_BASE_URL}/bet`, null, { 
-      params: { modo, gameid, score1, score2 } 
+      params: {
+        modo,
+        token,
+        gameid,
+        score1,
+        score2
+      }
     }),
+
   getUser: (username: string) => 
     axios.get(`${API_BASE_URL}/user`, { params: { username } }),
 
@@ -39,5 +46,8 @@ export const api = {
     axios.get(`${API_BASE_URL}/team/logo`, { params: { team } }),
 
   getMatchStats: (matchId: number) =>
-    axios.get(`${API_BASE_URL}/match/stats`, { params: { id: matchId } })
+    axios.get(`${API_BASE_URL}/match/stats`, { params: { id: matchId } }),
+
+  getHint: (matchId: number) =>
+    axios.get(`${API_BASE_URL}/match/hint`, { params: { id: matchId } })
 };

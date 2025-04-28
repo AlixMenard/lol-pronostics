@@ -4,11 +4,14 @@ import { styled } from '@mui/material/styles';
 import { Match } from '../../types';
 import { BoNumber } from '../common/BoNumber';
 import { TeamLogo } from '../common/TeamLogo';
+import { api } from '../../services/api';
+import { useUser } from '../../context/UserContext';
+import { authService } from '../../services/auth.service';
 
 const StyledDialog = styled(Dialog)`
   .MuiPaper-root {
     background-color: var(--primary-color);
-    color: var (--text-color);
+    color: var(--text-color);
     border: 1px solid var(--secondary-color);
     animation: slideIn 0.3s ease-out;
     width: 400px;
@@ -30,7 +33,6 @@ const StyledDialog = styled(Dialog)`
     }
   }
 `;
-
 
 const TitleContainer = styled('div')`
   display: flex;
@@ -113,6 +115,8 @@ export interface BetModalProps {
 
 export const BetModal = ({ open, onClose, match, onSubmit }: BetModalProps) => {
   const [selectedTeam, setSelectedTeam] = useState<1 | 2 | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { userId } = useUser();
 
   const getScoreOptions = (bo: number) => {
     const maxWins = Math.floor((bo - 1) / 2) + 1; 
@@ -132,15 +136,34 @@ export const BetModal = ({ open, onClose, match, onSubmit }: BetModalProps) => {
     setSelectedTeam(team);
   };
 
-  const handleScoreSelect = (winnerScore: number, loserScore: number) => {
-    if (!selectedTeam) return;
-
-    const score1 = selectedTeam === 1 ? winnerScore : loserScore;
-    const score2 = selectedTeam === 1 ? loserScore : winnerScore;
+  const handleScoreSelect = async (winnerScore: number, loserScore: number) => {
+    if (!selectedTeam || !userId) {
+      setError("Une erreur est survenue. Veuillez vous reconnecter.");
+      return;
+    }
     
-    onSubmit(score1, score2);
-    setSelectedTeam(null);
-    onClose();
+    const token = authService.getToken();
+    if (!token) {
+      setError("Session expirée. Veuillez vous reconnecter.");
+      return;
+    }
+
+    try {
+      const score1 = selectedTeam === 1 ? winnerScore : loserScore;
+      const score2 = selectedTeam === 2 ? winnerScore : loserScore;
+
+      await api.placeBet(userId, token, match.id, score1, score2);
+      onSubmit(score1, score2);
+      onClose();
+    } catch (error: any) {
+      if (error.response?.status === 422) {
+        setError("Le match a déjà commencé ou les scores sont invalides.");
+      } else if (error.response?.status === 401) {
+        setError("Session expirée. Veuillez vous reconnecter.");
+      } else {
+        setError("Impossible de placer le pari. Veuillez réessayer.");
+      }
+    }
   };
 
   return (
@@ -158,6 +181,11 @@ export const BetModal = ({ open, onClose, match, onSubmit }: BetModalProps) => {
       </DialogTitle>
       
       <DialogContentStyled hasselection={!!selectedTeam}>
+        {error && (
+          <Box sx={{ color: 'error.main', textAlign: 'center', mb: 2 }}>
+            {error}
+          </Box>
+        )}
         <TeamSelectionContainer>
           <TeamButton
             onClick={() => handleTeamSelect(1)}

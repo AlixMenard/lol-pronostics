@@ -10,8 +10,7 @@ export const useMatchStats = (matchId: number) => {
       try {
         const response = await api.getMatchStats(matchId);
         setStats(response.data);
-      } catch (error) {
-        console.error('Error fetching match stats:', error);
+      } catch {
       } finally {
         setIsLoading(false);
       }

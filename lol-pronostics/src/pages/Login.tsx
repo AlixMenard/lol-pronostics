@@ -30,21 +30,14 @@ export const Login = () => {
   
     try {
       const response = await api.signin(modo, password);
-      console.log('Réponse API:', response.data);
-  
       await authService.login(response.data.token, {
         id: response.data.id,
         name: response.data.name,
       });
-      console.log('Après authService.login, isAuthenticated:', authService.isAuthenticated());
   
       setUserId(response.data.id);
-      console.log('Après setUserId, userId:', response.data.id);
-  
       navigate('/', { replace: true });
-      console.log('Navigation déclenchée vers /');
     } catch (err) {
-      console.error('Erreur:', err);
       setError('Identifiants invalides');
     }
   };

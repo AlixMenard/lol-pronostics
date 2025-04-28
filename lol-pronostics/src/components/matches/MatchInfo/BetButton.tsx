@@ -3,10 +3,12 @@ import { StyledButton } from '../../styled/StyledButton';
 import { MouseEvent } from 'react';
 
 const Button = styled(StyledButton)<{ hasbet: 'true' | 'false'; disabled: boolean }>`
-  min-width: 120px;
+  min-width: 100px;
   text-transform: none;
   position: relative;
-  height: 36px;
+  height: 32px;
+  font-size: 0.85rem;
+  padding: 4px 12px;
 
   background-color: ${props => {
     if (props.disabled) return '#666666';
