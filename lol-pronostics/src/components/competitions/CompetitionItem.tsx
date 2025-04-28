@@ -14,7 +14,7 @@ const StyledListItem = styled(ListItemButton)`
     background-color: rgba(255, 63, 9, 0.1);
   }
   padding: 0;
-  height: 80px; // Hauteur fixe plus petite
+  height: 60px;
 `;
 
 interface CompetitionItemProps {

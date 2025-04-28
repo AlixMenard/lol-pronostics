@@ -6,7 +6,8 @@ import { useUser } from '../context/UserContext';
 import { styled } from '@mui/material/styles';
 import logo from "../assets/logo_mode_otp.png";
 import MenuIcon from '@mui/icons-material/Menu';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { authService } from '../services/auth.service';
 
 const StyledLogo = styled('img')`
   height: 40px;
@@ -49,17 +50,20 @@ const UserSection = styled('div')`
 `;
 
 const Layout = () => {
-  const { username, logout } = useUser();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(900)); 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { logout } = useUser();
+  const user = authService.getUser();
+
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    if (authService.isAuthenticated()) { 
+      logout();
+      navigate('/login');
+    }
   };
-
   return (
     <>
       <StyledAppBar position="static">
@@ -91,9 +95,9 @@ const Layout = () => {
                   }}>
                     Stats
                   </MenuItem>
-                  {username && (
+                  {user && (
                     <MenuItem onClick={() => {
-                      navigate(`/predictions/${username}`);
+                      navigate(`/predictions/${user.name}`);
                       setAnchorEl(null);
                     }}>
                       Mes pronostics
@@ -111,16 +115,18 @@ const Layout = () => {
                   <StyledIcon icon={faChartBar} />
                   Stats
                 </StyledButton>
-                <StyledButton color="inherit" onClick={() => navigate(`/predictions/${username}`)}>
-                  <StyledIcon icon={faFolder} />
-                  Mes prédiction
-                </StyledButton>
+                {user && (
+                  <StyledButton color="inherit" onClick={() => navigate(`/predictions/${user.name}`)}>
+                    <StyledIcon icon={faFolder} />
+                    Mes prédictions
+                  </StyledButton>
+                )}
               </>
             )}
           </NavSection>
-          {username && (
+          {user && (
             <UserSection>
-              {username} 
+              {user.name} 
               <StyledButton color="inherit" onClick={handleLogout}>
                 <StyledIcon icon={faSignOutAlt} />
                 Déconnexion

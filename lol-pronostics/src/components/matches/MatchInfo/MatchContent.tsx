@@ -5,10 +5,9 @@ import { BoNumber } from '../../common/BoNumber';
 import { TeamLogo } from '../../common/TeamLogo';
 import { MatchTime } from '../MatchInfo/MatchTime';
 
-
 const LogoContainer = styled('div')`
-  width: 40px; // Réduit de 48px à 40px
-  height: 40px; // Réduit de 48px à 40px
+  width: 32px;
+  height: 32px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,21 +26,22 @@ const MatchTitleContainer = styled('div')<{ isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: ${props => props.isMobile ? '80px' : '120px'};
+  width: ${props => props.isMobile ? '70px' : '100px'};
   flex-shrink: 0;
 `;
 
 const MatchScore = styled(Typography)`
-  color: var(--text-color);
-  font-size: 0.9rem;
+  color: var(--secondary-color);
+  font-size: 1.2rem;
   opacity: 0.9;
   text-align: center;
-  margin-top: 4px;
+  margin-top: 2px;
 `;
 
 const MatchTitle = styled(Typography)`
   text-align: center;
   flex-shrink: 0;
+  font-size: 0.9rem;
 `;
 
 

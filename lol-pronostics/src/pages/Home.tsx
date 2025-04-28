@@ -2,17 +2,18 @@ import { useState, useEffect } from 'react';
 import { Container, Grid, useTheme, useMediaQuery } from '@mui/material';
 import { api } from '../services/api';
 import { useUser } from '../context/UserContext';
+import { authService } from '../services/auth.service';
 import { CompetitionList } from '../components/competitions/CompetitionList';
 import { MatchList } from '../components/matches/MatchList';
-import BetModal from '../components/BetModal';
-import { leaguepediaApi } from '../services/leaguepediaApi';
-import { Competition, Match, TeamLogos, Prediction } from '../types';
+import BetModal from '../components/modals/BetModal';
+import { Competition, Match, Prediction } from '../types';
 import styled from 'styled-components';
 import { Loader } from '../components/common/Loader';
 import { CompetitionSelection } from '../components/stats/CompetitionSelection';
+import { StatsModal } from '../components/modals/StatsModal';
 
 const StyledContainer = styled(Container)`
-  height: calc(100vh - 80px); // 80px corresponds to the header height
+  height: calc(100vh - 80px);
   overflow: hidden;
 `;
 
@@ -26,15 +27,15 @@ const ContentContainer = styled('div')<ContentContainerProps>`
 
 const Home = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down(1000)); // Changé de 'sm' à 900
+  const isMobile = useMediaQuery(theme.breakpoints.down(1000)); 
 
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [selectedCompetition, setSelectedCompetition] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const [selectedMatchLogos, setSelectedMatchLogos] = useState<{ team1: string | null, team2: string | null }>({ team1: null, team2: null });
   const { userId } = useUser();
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchCompetitions = async () => {
@@ -44,8 +45,8 @@ const Home = () => {
         if (response.data.length > 0) {
           setSelectedCompetition(response.data[0].id);
         }
-      } catch (error) {
-        console.error('Failed to fetch competitions:', error);
+      } catch {
+        // Error silently handled
       } finally {
         setLoading(false);
       }
@@ -80,8 +81,8 @@ const Home = () => {
         });
         
         setMatches(matchesWithBets);
-      } catch (error) {
-        console.error('Failed to fetch matches:', error);
+      } catch {
+        // Error silently handled
       }
     };
     fetchMatches();
@@ -90,8 +91,11 @@ const Home = () => {
   const handleBetSubmit = async (score1: number, score2: number) => {
     if (!userId || !selectedMatch) return;
     
+    const token = authService.getToken();
+    if (!token) return;
+    
     try {
-      await api.placeBet(userId, selectedMatch.id, score1, score2);
+      await api.placeBet(userId, token, selectedMatch.id, score1, score2);
       
       setMatches(matches.map(match => {
         if (match.id === selectedMatch.id) {
@@ -107,12 +111,16 @@ const Home = () => {
       }));
       
       setSelectedMatch(null);
-    } catch (error) {
-      console.error('Failed to place bet:', error);
+    } catch {
+      // Error silently handled
     }
   };
 
-  const handleMatchSelect = (match: Match) => {
+  const handleStatsClick = (matchId: number) => {
+    setSelectedMatchId(matchId);
+  };
+
+  const handleBetClick = (match: Match) => {
     setSelectedMatch(match);
   };
 
@@ -129,9 +137,17 @@ const Home = () => {
             selectedCompetition={selectedCompetition}
             onSelectCompetition={setSelectedCompetition}
           />
+          <CompetitionList  
+            competitions={competitions}
+            matches={matches}
+            selectedCompetition={selectedCompetition}
+            onSelectCompetition={setSelectedCompetition}
+            isMobile={isMobile}
+          />
           <MatchList
             matches={matches}
-            onMatchSelect={handleMatchSelect}
+            onMatchSelect={handleBetClick}
+            onStatsClick={handleStatsClick}
             isMobile={isMobile}
           />
         </ContentContainer>
@@ -140,6 +156,7 @@ const Home = () => {
           <Grid item xs={3}>
             <CompetitionList
               competitions={competitions}
+              matches={matches}
               selectedCompetition={selectedCompetition}
               onSelectCompetition={setSelectedCompetition}
               isMobile={isMobile}
@@ -148,7 +165,8 @@ const Home = () => {
           <Grid item xs={9}>
             <MatchList
               matches={matches}
-              onMatchSelect={handleMatchSelect}
+              onMatchSelect={handleBetClick}
+              onStatsClick={handleStatsClick}
               isMobile={isMobile}
             />
           </Grid>
@@ -163,6 +181,12 @@ const Home = () => {
           onSubmit={handleBetSubmit}
         />
       )}
+
+      <StatsModal
+        matchId={selectedMatchId}
+        open={!!selectedMatchId}
+        onClose={() => setSelectedMatchId(null)}
+      />
     </StyledContainer>
   );
 };

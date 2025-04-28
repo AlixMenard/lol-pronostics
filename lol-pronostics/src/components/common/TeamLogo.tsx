@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import { TeamCode } from '../../types';
 import { api } from '../../services/api';
 import RGE from "../../assets/RGE.png"
 import { Loader } from './Loader';
 
 const Logo = styled('img')`
   width: 40px;
-  height: 40px;
+  height: 50px;
   object-fit: contain;
 `;
 
@@ -43,9 +42,8 @@ export const TeamLogo = ({ teamCode, size = 'large' }: TeamLogoProps) => {
       try {
         setLoading(true);
         const response = await api.getTeamLogo(teamCode);
-        setLogo(response.data.url); // Modification ici pour accéder à response.data.url
-      } catch (error) {
-        console.error('Failed to fetch logo:', error);
+        setLogo(response.data.url);
+      } catch {
         setLogo(null);
       } finally {
         setLoading(false);

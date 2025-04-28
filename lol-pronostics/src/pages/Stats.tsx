@@ -52,8 +52,6 @@ interface UserStatsRow {
   details: Record<string, { num_bets: number; score: number }>;
 }
 
-
-
 const DetailRow = styled(TableRow)`
   background-color: rgba(255, 63, 9, 0.05);
 `;
@@ -107,10 +105,6 @@ const Row = ({ user, competitions }: { user: UserStatsRow; competitions: Competi
   );
 };
 
-const getPositionFromIndex = (index: number): number => {
-  return index + 1;
-};
-
 const Stats = () => {
   const [stats, setStats] = useState<RankingData[]>([]);
   const [competitions, setCompetitions] = useState<Competition[]>([]);
@@ -125,8 +119,8 @@ const Stats = () => {
         if (response.data.length > 0) {
           setSelectedCompetition(response.data[0].id);
         }
-      } catch (error) {
-        console.error('Failed to fetch competitions:', error);
+      } catch {
+        // Error silently handled
       }
     };
     fetchCompetitions();
@@ -138,8 +132,8 @@ const Stats = () => {
       try {
         const response = await api.getRanking(selectedCompetition);
         setStats(response.data);
-      } catch (error) {
-        console.error('Failed to fetch stats:', error);
+      } catch {
+        // Error silently handled
       } finally {
         setLoading(false);
       }
@@ -161,7 +155,7 @@ const Stats = () => {
       />
       <TableContainer component={StyledPaper}>
         <Table>
-        <TableHead>
+          <TableHead>
             <StyledTableRow>
               <StyledTableCell>Position</StyledTableCell>
               <StyledTableCell>Utilisateur</StyledTableCell>
@@ -176,23 +170,23 @@ const Stats = () => {
               const firstIndexWithSameScore = stats.findIndex(s => s.score === stat.score);
               const position = firstIndexWithSameScore + 1;
 
-    return (
-      <StyledTableRow key={stat.name}>
-        <StyledTableCell>{position}</StyledTableCell>
-        <StyledTableCell>
-          <PseudoLink 
-            to={`/predictions/${stat.name}`}
-            style={{ color: 'var(--secondary-color)', textDecoration: 'none' }}
-          >
-            {stat.name}
-          </PseudoLink>
-                </StyledTableCell>
-                <StyledTableCell align="center">{stat.num_bets}</StyledTableCell>
-                <StyledTableCell align="center">{stat.score}</StyledTableCell>
-                <StyledTableCell align="center">{(stat.rating * 100).toFixed(0)}%</StyledTableCell>
-                <StyledTableCell align="center">{(stat.accuracy * 100).toFixed(0)}%</StyledTableCell>
-              </StyledTableRow>
-            );
+              return (
+                <StyledTableRow key={stat.name}>
+                  <StyledTableCell>{position}</StyledTableCell>
+                  <StyledTableCell>
+                    <PseudoLink 
+                      to={`/predictions/${stat.name}`}
+                      style={{ color: 'var(--secondary-color)', textDecoration: 'none' }}
+                    >
+                      {stat.name}
+                    </PseudoLink>
+                  </StyledTableCell>
+                  <StyledTableCell align="center">{stat.num_bets}</StyledTableCell>
+                  <StyledTableCell align="center">{stat.score}</StyledTableCell>
+                  <StyledTableCell align="center">{(stat.rating * 100).toFixed(0)}%</StyledTableCell>
+                  <StyledTableCell align="center">{(stat.accuracy * 100).toFixed(0)}%</StyledTableCell>
+                </StyledTableRow>
+              );
             })}
           </TableBody>
         </Table>

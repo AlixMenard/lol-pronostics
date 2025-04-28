@@ -1,43 +1,31 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
+import { authService } from '../services/auth.service';
 
 interface UserContextType {
-  username: string | null;
   userId: number | null;
-  setUser: (username: string, id: number) => void;
+  setUserId: (id: number | null) => void;
   logout: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [username, setUsername] = useState<string | null>(() => 
-    localStorage.getItem('username')
-  );
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [userId, setUserId] = useState<number | null>(() => {
-    const id = localStorage.getItem('userId');
-    return id ? parseInt(id) : null;
+    const user = authService.getUser();
+    return user ? user.id : null;
   });
 
-  const setUser = (username: string, id: number) => {
-    localStorage.setItem('username', username);
-    localStorage.setItem('userId', id.toString());
-    setUsername(username);
-    setUserId(id);
-  };
-
   const logout = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('userId');
-    setUsername(null);
+    authService.logout();
     setUserId(null);
   };
 
   return (
-    <UserContext.Provider value={{ username, userId, setUser, logout }}>
+    <UserContext.Provider value={{ userId, setUserId, logout }}>
       {children}
     </UserContext.Provider>
   );
-}
+};
 
 export const useUser = () => {
   const context = useContext(UserContext);

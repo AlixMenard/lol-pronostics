@@ -23,10 +23,11 @@ interface MatchGroupProps {
   date: string;
   matches: Match[];
   onMatchSelect: (match: Match) => void;
+  onStatsClick: (matchId: number) => void;
   isMobile: boolean;
 }
 
-export const MatchGroup = ({ date, matches, onMatchSelect, isMobile }: MatchGroupProps) => (
+export const MatchGroup = ({ date, matches, onMatchSelect, onStatsClick, isMobile }: MatchGroupProps) => (
   <Box>
     <DateDivider variant="h6">{date}</DateDivider>
     <GridLayout>
@@ -35,6 +36,7 @@ export const MatchGroup = ({ date, matches, onMatchSelect, isMobile }: MatchGrou
           key={match.id}
           match={match}
           onBetClick={() => onMatchSelect(match)}
+          onStatsClick={onStatsClick}
           isMobile={isMobile}
         />
       ))}
