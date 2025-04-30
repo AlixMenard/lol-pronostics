@@ -3,7 +3,7 @@ import { StyledButton } from '../../styled/StyledButton';
 import { MouseEvent } from 'react';
 
 const Button = styled(StyledButton)<{ hasbet: 'true' | 'false'; disabled: boolean }>`
-  min-width: 100px;
+  min-width: 120px;
   text-transform: none;
   position: relative;
   height: 32px;

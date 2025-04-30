@@ -38,7 +38,9 @@ export const TeamLogo = ({ teamCode, size = 'large' }: TeamLogoProps) => {
         setLoading(false);
         return;
       }
-
+      else if(teamCode ==="IG"){
+        teamCode = "iG"
+      }
       try {
         setLoading(true);
         const response = await api.getTeamLogo(teamCode);
