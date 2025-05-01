@@ -17,7 +17,7 @@ export const api = {
     }),
 
   getCompetitions: () => 
-    axios.get(`${API_BASE_URL}/competitions`),
+    axios.get(`${API_BASE_URL}/competitions/current`),
 
   getMatches: (competition: number) => 
     axios.get(`${API_BASE_URL}/matches`, { params: { competition } }),
