@@ -4,11 +4,6 @@ const TEST_API = process.env.REACT_APP_TEST_API;
 const PROD_API = process.env.REACT_APP_PROD_API;
 const API_BASE_URL = process.env.NODE_ENV === 'development' ? TEST_API : PROD_API;
 
-interface SignInResponse {
-  id: number;
-  name: string;
-  token: string;
-}
 
 export const api = {
   signin: (modo: string, password: string) => 

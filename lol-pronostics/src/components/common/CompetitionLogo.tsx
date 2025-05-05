@@ -14,7 +14,9 @@ interface CompetitionLogoProps {
 }
 
 export const CompetitionLogo = ({ name, size = 'large' }: CompetitionLogoProps) => {
-  const shortName = name === "2025 Unicef LCK Package" ? "lck" : name.split(' ')[0].toLowerCase();
+
+  let shortName = name === "LFL2 Spring 2025" ? 'div2' : name.split(' ')[0].toLowerCase()
+
   let logoSrc;
 
   try {
