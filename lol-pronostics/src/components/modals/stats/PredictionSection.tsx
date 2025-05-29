@@ -91,21 +91,6 @@ interface PredictionSectionProps {
   stats?: MatchStats;
 }
 
-const getModerator = (name?: string): string => {
-  if (!name) return 'Modérateur';
-  
-  switch (name.toLowerCase()) {
-    case 'tom':
-      return 'Tom (Développeur)';
-    case 'nokatir':
-      return 'Nokatir (Mastermind)';
-    case 'valentin':
-      return 'Valentin (En recherche de douche)';
-    default:
-      return name;
-  }
-};
-
 export const PredictionSection = ({ prediction, bets, stats }: PredictionSectionProps) => {
   if (!prediction && bets.length === 0) {
     return null;
@@ -169,9 +154,8 @@ export const PredictionSection = ({ prediction, bets, stats }: PredictionSection
                 <ModeratorAvatar>
                   {bet.name ? <>{bet.name.substring(0, 2).toUpperCase()}</> : <Person />}
                 </ModeratorAvatar>
-                <Box>
-                  <ModeratorName>
-                    {getModerator(bet.name)}
+                <Box>                  <ModeratorName>
+                    {bet.name || 'Modérateur'}
                   </ModeratorName>
                   <Typography sx={{ color: '#888', fontSize: '0.9rem' }}>
                     {bet.team1bet} - {bet.team2bet}
