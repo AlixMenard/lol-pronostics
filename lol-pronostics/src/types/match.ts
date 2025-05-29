@@ -11,6 +11,11 @@ export interface Match {
     team1bet: number;
     team2bet: number;
   };
+  prediction?: {
+    score: [number, number];
+    ratio: number;
+  };
+  stats?: MatchStats;
 }
 
 export interface MatchStats {

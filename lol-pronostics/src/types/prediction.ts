@@ -8,3 +8,8 @@ export interface Prediction {
   score2: number;
   date: string;
 }
+
+export interface PredictionData {
+  score: [number, number];
+  ratio: number;
+}
