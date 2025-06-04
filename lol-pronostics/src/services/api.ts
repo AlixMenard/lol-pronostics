@@ -78,7 +78,7 @@ export const api = {
     }),
 
   getRanking: (tournament: number) => 
-    axiosInstance.get('/ranking', { params: { tournament } }),
+    axiosInstance.get('/ranking', { params: { competition } }),
 
   getTeamLogo: (team: string) =>
     axiosInstance.get('/team/logo', { params: { team } }),
